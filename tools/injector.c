@@ -107,8 +107,8 @@ int main(int argc, char *argv[]) {
     uint8_t sequence = 2;
     unsigned int duration = 0;
     uint8_t encoded_payload[14];
-    uint32_t *encoded_counter = (uint32_t *) (encoded_payload + 2);
-    uint32_t *encoded_max = (uint32_t *) (encoded_payload + 6);
+    //uint32_t *encoded_counter = (uint32_t *) (encoded_payload + 2);
+    //uint32_t *encoded_max = (uint32_t *) (encoded_payload + 6);
     uint32_t *encoded_session = (uint32_t *) (encoded_payload + 10);
 
     uint8_t payload[2*PAYLOAD_LEN];
@@ -257,6 +257,7 @@ int main(int argc, char *argv[]) {
     for (count = 0; count < npackets; count++) {
         memset(payload, 0, 2*PAYLOAD_LEN);
         memset(payload_1, 0, PAYLOAD_LEN);
+        count = count % 65535;
         for (i = 0; i < PAYLOAD_LEN; i++){
             payload[2*i] = count & 0x00FF;
             payload[2*i+1] = (count & 0xFF00) >> 8;
@@ -273,8 +274,8 @@ int main(int argc, char *argv[]) {
         // set the location code
         encoded_payload[1] = lcode & 0xFF;
 
-        *encoded_counter = htonl(count);
-        *encoded_max = htonl(npackets);
+        //*encoded_counter = htonl(count);
+        //*encoded_max = htonl(npackets);
         *encoded_session = htonl(session_id);
 
     
