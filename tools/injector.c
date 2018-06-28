@@ -60,7 +60,7 @@ void usage(char *argv[]) {
 int main(int argc, char *argv[]) {
     char *interface = NULL;
     unsigned int lcode = 0;
-    unsigned int npackets = 100;
+    unsigned long npackets = 100;
     unsigned int MCS = 0;
 
     int value[6];
@@ -82,9 +82,9 @@ int main(int argc, char *argv[]) {
     int GI = 0; 
 //    int ht_iter = 0;
 //    int gi_iter = 0;
-    unsigned int count = 0;
+    unsigned long count = 0;
 
-    unsigned int totalcount = 1;
+    unsigned long totalcount = 1;
 
     uint8_t *dmac = "\x04\xF0\x21\x32\xBD\xA5";
 
@@ -160,14 +160,14 @@ int main(int argc, char *argv[]) {
 		    return -1;
 		}
 		break;
-    	case 'n':
+    case 'n':
 		if (sscanf(optarg, "%u", &npackets) != 1) {
 		    printf("ERROR: Unable to parse number of packets\n");
 		    return -1;
 		}
 		break;
 
-    	case 'd':
+    case 'd':
 		if (sscanf(optarg, "%u", &interval) != 1) {
 		    printf("ERROR: Unable to parse interframe interval\n");
 		    return -1;
@@ -257,10 +257,10 @@ int main(int argc, char *argv[]) {
     for (count = 0; count < npackets; count++) {
         memset(payload, 0, 2*PAYLOAD_LEN);
         memset(payload_1, 0, PAYLOAD_LEN);
-	for (i = 0; i < PAYLOAD_LEN; i++){
-		payload[2*i] = count & 0x00FF;
-		payload[2*i+1] = (count & 0xFF00) >> 8;
-	}
+        for (i = 0; i < PAYLOAD_LEN; i++){
+            payload[2*i] = count & 0x00FF;
+            payload[2*i+1] = (count & 0xFF00) >> 8;
+        }
         memset(encoded_payload, 0, 14);
 
         // Set MCS count
@@ -277,7 +277,7 @@ int main(int argc, char *argv[]) {
         *encoded_max = htonl(npackets);
         *encoded_session = htonl(session_id);
 
-	
+    
         snprintf((char *) payload_1, PAYLOAD_LEN, "MCS %u %s%s Packet %u of %u",
                     MCS,
                     BW ? "40MHz" : "20MHz",
@@ -305,14 +305,14 @@ int main(int argc, char *argv[]) {
         txpack = (lorcon_packet_t *) lorcon_packet_from_lcpa(context, metapack);
 
         lorcon_packet_set_mcs(txpack, 1, MCS, GI, BW);
-		
+        
         if (lorcon_inject(context,txpack) < 0 ) 
             return -1;
 
-        usleep(interval * 1000);
+        usleep(interval * 1);
 
         printf("\033[K\r");
-        printf("[+] Sent %d frames, Hit CTRL + C to stop...", totalcount);
+        printf("[+] Sent %ld frames, Hit CTRL + C to stop...", totalcount);
         fflush(stdout);
         totalcount++;
 
